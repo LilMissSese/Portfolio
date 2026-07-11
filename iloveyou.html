@@ -63,6 +63,38 @@
     .iloveyou-quote{ font-size:1.05rem; }
     .iloveyou-line{ font-size:1.8rem; }
   }
+
+  /* Endless slow auto-scroll through fonts/blank.txt, styled like a
+     letter/poem block. The track holds two back-to-back copies of the
+     text; JS moves it upward via requestAnimationFrame and wraps the
+     offset (using modulo against one copy's height) once the first
+     copy has fully scrolled past, so the loop never visibly jumps or
+     shows a blank gap. */
+  .iloveyou-scroll-viewport{
+    margin-top:36px;
+    max-width:560px;
+    max-height:38vh;
+    overflow:hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 12%, black 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, black 12%, black 88%, transparent 100%);
+  }
+  .iloveyou-scroll-track{
+    will-change:transform;
+  }
+  .iloveyou-scroll-copy{
+    font-family:'Minecraft Seven', 'Helvetica Neue', Arial, sans-serif;
+    font-size:1.05rem;
+    line-height:1.9;
+    white-space:pre-wrap;
+    text-shadow:0 2px 0 rgba(0,0,0,.6), 0 0 14px rgba(0,0,0,.4);
+    opacity:.85;
+    padding-bottom:2.4em; /* gap between the looped copies */
+  }
+
+  @media (max-width:480px){
+    .iloveyou-scroll-viewport{ max-height:32vh; }
+    .iloveyou-scroll-copy{ font-size:.92rem; }
+  }
   .back-home{
     position:fixed;
     top:calc(env(safe-area-inset-top, 0px) + 14px);
@@ -114,8 +146,79 @@
   <main class="iloveyou-content">
     <p class="iloveyou-quote">"And the universe said I love you because you are love"</p>
     <p class="iloveyou-line">I love you.</p>
+
+    <div class="iloveyou-scroll-viewport" id="iloveyou-scroll-viewport">
+      <div class="iloveyou-scroll-track" id="iloveyou-scroll-track">
+        <div class="iloveyou-scroll-copy" id="iloveyou-scroll-copy-a"></div>
+        <div class="iloveyou-scroll-copy" id="iloveyou-scroll-copy-b" aria-hidden="true"></div>
+      </div>
+    </div>
   </main>
 
 <script src="music-player.js"></script>
+<script>
+  // Endless slow auto-scroll through fonts/blank.txt. Two identical
+  // copies of the text sit stacked in the track; each frame we move
+  // the track up by a small, framerate-independent amount and take
+  // the result modulo one copy's height, so once the first copy has
+  // scrolled fully out of view the offset silently wraps back to the
+  // equivalent position in the second copy — same visual spot, so
+  // there's no jump or gap, and it can run forever without ever
+  // resetting to a jarring blank state.
+  document.addEventListener('DOMContentLoaded', () => {
+    const viewport = document.getElementById('iloveyou-scroll-viewport');
+    const track = document.getElementById('iloveyou-scroll-track');
+    const copyA = document.getElementById('iloveyou-scroll-copy-a');
+    const copyB = document.getElementById('iloveyou-scroll-copy-b');
+    if (!viewport || !track || !copyA || !copyB) return;
+
+    const SPEED_PX_PER_SEC = 18; // slow, readable scroll
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    fetch('fonts/blank.txt', { cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok) throw new Error('blank.txt not found');
+        return res.text();
+      })
+      .then((text) => {
+        const content = text.trim();
+        if (!content) return;
+        copyA.textContent = content;
+        copyB.textContent = content;
+        startScrolling();
+      })
+      .catch((err) => {
+        console.log('Could not load fonts/blank.txt:', err);
+        viewport.hidden = true;
+      });
+
+    function startScrolling() {
+      if (reduceMotion) return; // respect the OS-level preference; text stays static and readable
+
+      let offset = 0;
+      let lastTime = null;
+      let copyHeight = copyA.getBoundingClientRect().height;
+
+      window.addEventListener('resize', () => {
+        copyHeight = copyA.getBoundingClientRect().height;
+      });
+
+      function frame(timestamp) {
+        if (lastTime === null) lastTime = timestamp;
+        const deltaSeconds = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        if (copyHeight > 0 && document.visibilityState === 'visible') {
+          offset = (offset + SPEED_PX_PER_SEC * deltaSeconds) % copyHeight;
+          track.style.transform = `translateY(${-offset}px)`;
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    }
+  });
+</script>
 </body>
 </html>
