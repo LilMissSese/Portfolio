@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const FADE_SECONDS = 1.8; // length of the in/out fade, in seconds of audio time
     const initialVolumePercent = savedState && typeof savedState.volume === 'number'
       ? Math.round(savedState.volume * 100)
-      : 25;
+      : 50;
     let userVolume = initialVolumePercent / 100; // 0–1, set by the slider
     let playing = false;
 

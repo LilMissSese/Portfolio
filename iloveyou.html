@@ -135,15 +135,18 @@
     </div>
     <div class="music-volume-wrap">
       <div id="music-volume" class="music-volume" role="slider" tabindex="0"
-           aria-label="Music volume" aria-orientation="vertical" aria-valuenow="25">
+           aria-label="Music volume" aria-orientation="vertical" aria-valuenow="50">
         <div class="music-volume-track"></div>
         <div id="music-volume-fill" class="music-volume-fill"></div>
         <div id="music-volume-thumb" class="music-volume-thumb"></div>
       </div>
     </div>
   </div>
-    
-</div>
+
+  <main class="iloveyou-content">
+    <p class="iloveyou-quote">"And the universe said I love you because you are love"</p>
+    <p class="iloveyou-line">I love you.</p>
+
     <div class="iloveyou-scroll-viewport" id="iloveyou-scroll-viewport">
       <div class="iloveyou-scroll-track" id="iloveyou-scroll-track">
         <div class="iloveyou-scroll-copy" id="iloveyou-scroll-copy-a"></div>
@@ -169,7 +172,7 @@
     const copyB = document.getElementById('iloveyou-scroll-copy-b');
     if (!viewport || !track || !copyA || !copyB) return;
 
-    const SPEED_PX_PER_SEC = 8; // slow, readable scroll
+    const SPEED_PX_PER_SEC = 18; // slow, readable scroll
     const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     fetch('fonts/blank.txt', { cache: 'no-store' })
@@ -178,10 +181,9 @@
         return res.text();
       })
       .then((text) => {
-        const content = text.trim();
-        if (!content) return;
-        copyA.textContent = content;
-        copyB.textContent = content;
+        if (!text.trim()) return; // file is empty or whitespace-only — nothing to show
+        copyA.textContent = text;
+        copyB.textContent = text;
         startScrolling();
       })
       .catch((err) => {
