@@ -169,7 +169,7 @@
     const copyB = document.getElementById('iloveyou-scroll-copy-b');
     if (!viewport || !track || !copyA || !copyB) return;
 
-    const SPEED_PX_PER_SEC = 18; // slow, readable scroll
+    const SPEED_PX_PER_SEC = 8; // slow, readable scroll
     const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     fetch('fonts/blank.txt', { cache: 'no-store' })
