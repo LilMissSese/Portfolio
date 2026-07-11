@@ -208,3 +208,14 @@
   .music-volume-wrap{ width:28px; height:70px; padding:10px 0; }
   .music-volume{ width:24px; }
 }
+
+/* Toggle-only mode: some pages (e.g. iloveyou.html) want the music to
+   keep playing/persisting via the same shared player, but with no
+   visible widget chrome except the play/pause button itself. */
+.music-control.toggle-only .music-meta,
+.music-control.toggle-only .music-volume-wrap{
+  display:none;
+}
+.music-control.toggle-only .music-row{
+  gap:0;
+}

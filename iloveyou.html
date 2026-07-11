@@ -4,45 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>I love you</title>
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.cdnfonts.com/css/minecraft-4" rel="stylesheet">
 <link rel="stylesheet" href="music-player.css">
 <style>
-  /* Small page-specific tweaks — everything else reuses style.css's
-     existing .card/.footer look so this page matches the rest of the site. */
-  .iloveyou-card{ max-width:480px; }
-  .iloveyou-title{
-    font-size:2rem;
-    font-weight:800;
-    margin-bottom:14px;
+  :root{
+    --black:#0a0a0a;
+    --white:#ffffff;
   }
-  .iloveyou-body{
-    color:var(--gray-600);
-    line-height:1.6;
-    font-size:1rem;
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html, body{
+    height:100%;
   }
-  .back-home{
-    display:inline-block;
-    margin-top:28px;
-    color:var(--gray-600);
-    text-decoration:none;
-    font-size:.85rem;
-    font-weight:600;
-    transition:color .15s ease;
+
+  body{
+    min-height:100vh;
+    background:
+      linear-gradient(rgba(10,8,6,.45), rgba(10,8,6,.45)),
+      url('backgrounds/iloveyou-bg.webp');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+    text-align:center;
   }
-  .back-home:hover{ color:var(--white); }
+
+  .iloveyou-content{
+    max-width:640px;
+  }
+
+  .iloveyou-quote{
+    font-family:'Minecraft', 'Helvetica Neue', Arial, sans-serif;
+    font-size:1.4rem;
+    line-height:1.7;
+    text-shadow:0 2px 0 rgba(0,0,0,.6), 0 0 18px rgba(0,0,0,.4);
+    margin-bottom:28px;
+  }
+
+  .iloveyou-line{
+    font-family:'Minecraft', 'Helvetica Neue', Arial, sans-serif;
+    font-size:2.4rem;
+    text-shadow:0 3px 0 rgba(0,0,0,.6), 0 0 22px rgba(0,0,0,.45);
+  }
+
+  @media (max-width:480px){
+    .iloveyou-quote{ font-size:1.05rem; }
+    .iloveyou-line{ font-size:1.8rem; }
+  }
 </style>
 </head>
 <body>
 
-  <div class="bg-shapes" aria-hidden="true">
-    <span class="shape circle"></span>
-    <span class="shape ring"></span>
-  </div>
-
-  <canvas id="starfield" aria-hidden="true"></canvas>
-
   <audio id="bg-music" loop preload="auto"></audio>
-  <div class="music-control">
+  <div class="music-control toggle-only">
     <div class="music-row">
       <div class="music-meta">
         <img id="music-art" class="music-art" src="" alt="" hidden>
@@ -67,16 +86,11 @@
     </div>
   </div>
 
-  <main class="card iloveyou-card">
-    <h1 class="iloveyou-title">I love you</h1>
-    <p class="iloveyou-body">
-      This page is just a placeholder for now — tell me what you'd like it to say
-      and look like, and I'll build it out.
-    </p>
-    <a class="back-home" href="index.html">&larr; Back home</a>
+  <main class="iloveyou-content">
+    <p class="iloveyou-quote">"And the universe said I love you because you are love"</p>
+    <p class="iloveyou-line">I love you.</p>
   </main>
 
-<script src="starfield.js"></script>
 <script src="music-player.js"></script>
 </body>
 </html>
