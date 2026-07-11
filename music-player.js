@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function readSavedState() {
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : null;
     } catch (err) {
       return null;
@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function writeSavedState(patch) {
     try {
       const current = readSavedState() || {};
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, ...patch }));
-    } catch (err) { /* sessionStorage unavailable (private mode etc) — just skip persistence */ }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, ...patch }));
+    } catch (err) { /* localStorage unavailable (private mode etc) — just skip persistence */ }
   }
 
   const savedState = readSavedState();
