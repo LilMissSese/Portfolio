@@ -63,9 +63,27 @@
     .iloveyou-quote{ font-size:1.05rem; }
     .iloveyou-line{ font-size:1.8rem; }
   }
+  .back-home{
+    position:fixed;
+    top:calc(env(safe-area-inset-top, 0px) + 14px);
+    left:calc(env(safe-area-inset-left, 0px) + 14px);
+    z-index:50;
+    color:var(--white);
+    text-decoration:none;
+    font-size:.85rem;
+    font-weight:600;
+    background:rgba(10,10,10,.55);
+    border:1.5px solid var(--white);
+    border-radius:999px;
+    padding:8px 14px;
+    transition:background .15s ease;
+  }
+  .back-home:hover{ background:rgba(170,70,173,.55); }
 </style>
 </head>
 <body>
+
+  <a class="back-home" href="index.html">&larr; Back</a>
 
   <audio id="bg-music" loop preload="auto"></audio>
   <div class="music-control toggle-only">
