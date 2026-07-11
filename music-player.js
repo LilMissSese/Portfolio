@@ -256,12 +256,21 @@ document.addEventListener('DOMContentLoaded', () => {
       writeSavedState({ volume: userVolume });
     }
 
-    volumeEl.addEventListener('pointerdown', (e) => {
+        volumeEl.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       volumeEl.setPointerCapture(e.pointerId);
-      setVolume(percentFromPointer(e.clientY));
-
-      const onMove = (ev) => setVolume(percentFromPointer(ev.clientY));
+    
+      const rect = volumeEl.getBoundingClientRect(); // measure once, before any chrome collapse
+    
+      const percentFromY = (clientY) => {
+        if (!rect.height) return userVolume * 100;
+        const raw = ((rect.bottom - clientY) / rect.height) * 100;
+        return Math.max(0, Math.min(100, raw));
+      };
+    
+      setVolume(percentFromY(e.clientY));
+    
+      const onMove = (ev) => setVolume(percentFromY(ev.clientY));
       const onUp = (ev) => {
         volumeEl.releasePointerCapture(ev.pointerId);
         volumeEl.removeEventListener('pointermove', onMove);
