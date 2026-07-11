@@ -172,12 +172,13 @@
 }
 .music-volume-fill{
   position:absolute;
-  left:0;
-  right:0;
+  left:50%;
   bottom:0;
+  width:4px;
   height:25%; /* overwritten inline by JS as the value changes */
   border-radius:2px;
   background:var(--purple);
+  transform:translateX(-50%);
   pointer-events:none;
 }
 .music-volume-thumb{
