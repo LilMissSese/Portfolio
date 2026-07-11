@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // never re-read the rect after the drag begins.
     volumeEl.addEventListener('pointerdown', (e) => {
       e.preventDefault();
-      resumeAudioContext();
+      unlockAudio();
       volumeEl.setPointerCapture(e.pointerId);
 
       const rect = volumeEl.getBoundingClientRect();
@@ -335,11 +335,29 @@ document.addEventListener('DOMContentLoaded', () => {
       writeSavedState({ playing: isPlaying });
     }
 
+    let audioUnlocked = false;
+
+    // First-ever successful tap/key/touch anywhere should just unlock
+    // audio and make sure playback is going — never treat it as a
+    // pause, even if the toggle button's own click handler and this
+    // window-level listener both fire for the same physical tap. Only
+    // one of them will actually perform the unlock, since this is
+    // idempotent; whichever runs second becomes a no-op.
+    function unlockAudio() {
+      if (audioUnlocked) return false;
+      audioUnlocked = true;
+      resumeAudioContext();
+      if (!playing) {
+        music.play().then(() => setPlayingUI(true)).catch(() => {});
+      }
+      return true;
+    }
+
     async function attemptAutoplay() {
       // Playback itself can always start "silently" here because gain
       // is 0 until applyFade raises it, and the AudioContext starts
       // suspended (no audible output at all) until a user gesture
-      // resumes it — so we don't need the old muted-attribute trick.
+      // resumes it.
       try {
         await music.play();
         setPlayingUI(true);
@@ -348,43 +366,24 @@ document.addEventListener('DOMContentLoaded', () => {
         setPlayingUI(false);
       }
 
-      const startOnInteraction = async () => {
-        resumeAudioContext();
-        if (!playing) {
-          try {
-            await music.play();
-            setPlayingUI(true);
-          } catch (e) { /* ignore */ }
-        }
-        window.removeEventListener('pointerdown', startOnInteraction);
-        window.removeEventListener('keydown', startOnInteraction);
-        window.removeEventListener('touchstart', startOnInteraction);
+      const onFirstInteraction = () => {
+        unlockAudio();
+        window.removeEventListener('pointerdown', onFirstInteraction);
+        window.removeEventListener('keydown', onFirstInteraction);
+        window.removeEventListener('touchstart', onFirstInteraction);
       };
-      window.addEventListener('pointerdown', startOnInteraction, { once: true });
-      window.addEventListener('keydown', startOnInteraction, { once: true });
-      window.addEventListener('touchstart', startOnInteraction, { once: true });
+      window.addEventListener('pointerdown', onFirstInteraction, { once: true });
+      window.addEventListener('keydown', onFirstInteraction, { once: true });
+      window.addEventListener('touchstart', onFirstInteraction, { once: true });
     }
 
     toggle.addEventListener('click', async () => {
-      const wasSuspended = audioCtx.state === 'suspended';
-      resumeAudioContext();
+      // If this very tap is the one that unlocks audio, unlockAudio()
+      // already handles getting playback going — don't also run the
+      // toggle logic below, which would immediately pause it again.
+      if (unlockAudio()) return;
+
       await trackReady;
-
-      if (wasSuspended) {
-        // This tap's real job was just to unlock audio for iOS. If the
-        // music was already silently autoplaying (gain was 0), let it
-        // keep playing — now audibly — instead of treating this tap as
-        // a request to pause what looked, visually, like it was
-        // already going.
-        if (!playing) {
-          try {
-            await music.play();
-            setPlayingUI(true);
-          } catch (e) { /* ignore */ }
-        }
-        return;
-      }
-
       if (playing) {
         music.pause();
         setPlayingUI(false);
