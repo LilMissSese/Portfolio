@@ -239,16 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     music.addEventListener('timeupdate', applyFade);
 
-    // Custom vertical slider: percent is measured from the bottom of
-    // the track (0%) to the top (100%), driven entirely by pointer
-    // events so it works the same on mouse, touch, and pen regardless
-    // of any given browser's native <input type=range> quirks.
-    function percentFromPointer(clientY) {
-      const rect = volumeEl.getBoundingClientRect();
-      if (!rect.height) return userVolume * 100;
-      return ((rect.bottom - clientY) / rect.height) * 100;
-    }
-
     function setVolume(percent) {
       const clamped = setVolumeUI(percent);
       userVolume = clamped / 100;
@@ -256,21 +246,43 @@ document.addEventListener('DOMContentLoaded', () => {
       writeSavedState({ volume: userVolume });
     }
 
-        volumeEl.addEventListener('pointerdown', (e) => {
+    // Custom vertical slider, driven by pointer events so it works the
+    // same on mouse, touch, and pen regardless of any given browser's
+    // native <input type=range> quirks.
+    //
+    // On mobile, measuring getBoundingClientRect() fresh on every
+    // pointermove and computing an *absolute* position from it is
+    // fragile: a vertical drag can trigger the browser's address bar /
+    // toolbar to collapse mid-gesture, which shifts the viewport and
+    // moves rect.bottom out from under your finger. That made the
+    // slider seem to only ever creep upward and get stuck once the
+    // chrome finished collapsing.
+    //
+    // Fix: measure the track height once at pointerdown, then track
+    // the finger's *relative* movement (delta) from the starting
+    // point instead of recomputing an absolute position on every
+    // move. A mid-drag viewport shift no longer matters because we
+    // never re-read the rect after the drag begins.
+    volumeEl.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       volumeEl.setPointerCapture(e.pointerId);
-    
-      const rect = volumeEl.getBoundingClientRect(); // measure once, before any chrome collapse
-    
-      const percentFromY = (clientY) => {
-        if (!rect.height) return userVolume * 100;
-        const raw = ((rect.bottom - clientY) / rect.height) * 100;
-        return Math.max(0, Math.min(100, raw));
+
+      const rect = volumeEl.getBoundingClientRect();
+      const trackHeight = rect.height || 1;
+      const startY = e.clientY;
+      const startPercent = parseFloat(volumeEl.getAttribute('aria-valuenow')) || (userVolume * 100);
+
+      // A direct tap still jumps straight to that position, using the
+      // rect we just measured (safe here since it's pointerdown, before
+      // any chrome collapse has a chance to happen).
+      const tapPercent = ((rect.bottom - e.clientY) / trackHeight) * 100;
+      setVolume(tapPercent);
+
+      const onMove = (ev) => {
+        const deltaY = startY - ev.clientY; // finger moving up (smaller Y) = positive = louder
+        const deltaPercent = (deltaY / trackHeight) * 100;
+        setVolume(startPercent + deltaPercent);
       };
-    
-      setVolume(percentFromY(e.clientY));
-    
-      const onMove = (ev) => setVolume(percentFromY(ev.clientY));
       const onUp = (ev) => {
         volumeEl.releasePointerCapture(ev.pointerId);
         volumeEl.removeEventListener('pointermove', onMove);
