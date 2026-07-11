@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serenity Belle | Photos</title>
+<link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <header class="gallery-header">
+    <a class="back-link" href="index.html">&larr; Back</a>
+    <h1 class="gallery-title">Photos</h1>
+    <span class="gallery-count" id="gallery-count"></span>
+  </header>
+
+  <main class="gallery" id="gallery" aria-live="polite">
+    <p class="gallery-empty" id="gallery-empty" hidden>
+      No photos yet — drop images into <code>/photos</code> and refresh.
+    </p>
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img class="lightbox-img" id="lightbox-img" alt="">
+  </div>
+
+<script src="starfield.js"></script>
+<script src="gallery.js"></script>
+</body>
+</html>

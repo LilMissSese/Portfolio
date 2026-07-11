@@ -1,0 +1,371 @@
+:root{
+  --black:#0a0a0a;
+  --white:#ffffff;
+  --gray-100:#1a1a1a;
+  --gray-300:#2b2b2b;
+  --gray-600:#b8b8b8;
+  --purple:#aa46ad;
+  --radius:14px;
+  --shadow: 0 2px 0 var(--white);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+body{
+  min-height:100vh;
+  background:var(--black);
+  color:var(--white);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:60px 16px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+#starfield{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:var(--black);
+}
+
+/* decorative background shapes */
+.bg-shapes{position:fixed; inset:0; z-index:0; pointer-events:none;}
+.bg-shapes .shape{position:absolute; border-color:var(--white);}
+.bg-shapes .circle{
+  width:260px; height:260px; border-radius:50%;
+  border:2px solid var(--white);
+  top:-80px; left:-90px; opacity:.06;
+}
+.bg-shapes .ring{
+  width:340px; height:340px; border-radius:50%;
+  border:2px solid var(--purple);
+  bottom:-140px; right:-120px; opacity:.12;
+}
+
+.music-control{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:12px;
+  max-width:min(70vw, 320px);
+}
+
+.music-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.music-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  overflow:hidden;
+  min-width:0;
+  background:var(--black);
+  border:1.5px solid var(--white);
+  border-radius:999px;
+  padding:5px 12px 5px 5px;
+}
+
+.music-art{
+  width:30px; height:30px;
+  min-width:30px; min-height:30px;
+  max-width:30px; max-height:30px;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center;
+  overflow:hidden;
+  flex-shrink:0;
+  display:block;
+}
+.music-art[hidden]{ display:none !important; }
+
+.music-art-fallback{
+  width:30px; height:30px;
+  min-width:30px; min-height:30px;
+  max-width:30px; max-height:30px;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--purple);
+  color:var(--white);
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  font-size:14px;
+  line-height:1;
+  flex-shrink:0;
+}
+.music-art-fallback[hidden]{ display:none !important; }
+
+.music-text{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  overflow:hidden;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+.music-now-playing,
+.music-title{
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  font-weight:600;
+  line-height:1.3;
+}
+
+.music-now-playing{
+  font-size:.6rem;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:var(--gray-600);
+}
+
+.music-title{
+  font-size:.8rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:150px;
+}
+
+.music-toggle{
+  width:44px; height:44px;
+  border-radius:50%;
+  border:1.5px solid var(--white);
+  background:var(--black);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition: background .18s ease, transform .18s ease, border-color .18s ease;
+}
+.music-toggle svg{
+  width:18px; height:18px;
+  fill:var(--white);
+}
+.music-toggle .icon-pause{display:none;}
+.music-toggle.is-playing .icon-play{display:none;}
+.music-toggle.is-playing .icon-pause{display:block;}
+.music-toggle:hover{
+  background:var(--purple);
+  border-color:var(--purple);
+  transform:translateY(-2px);
+}
+
+.music-volume-wrap{
+  width:24px;
+  height:90px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.music-volume{
+  width:90px;
+  height:20px;
+  margin:0;
+  cursor:pointer;
+  accent-color: var(--purple);
+  background:transparent;
+  transform: rotate(-90deg);
+}
+
+.link-avatar-wrap{
+  position:relative;
+  width:28px; height:28px;
+  min-width:28px; min-height:28px;
+  margin-right:10px;
+  flex-shrink:0;
+}
+.link-avatar-wrap .link-avatar{
+  margin-right:0;
+}
+
+.link-avatar{
+  width:28px; height:28px;
+  min-width:28px; min-height:28px;
+  max-width:28px; max-height:28px;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center;
+  overflow:hidden;
+  border:1.5px solid var(--white);
+  background:var(--gray-100);
+  flex-shrink:0;
+  display:block;
+}
+
+/* The fallback icon always sits underneath, absolutely positioned to fill
+   the same slot. When the real photo loads, it's on top and fully covers
+   it — no photo, and the icon shows through. This avoids any reliance on
+   toggling [hidden], which can lose CSS-specificity ties. */
+.link-avatar-wrap{
+  isolation:isolate;
+}
+.link-avatar-icon{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--purple);
+}
+.link-avatar-wrap img.link-avatar{
+  position:relative;
+  z-index:1;
+}
+.link-avatar-icon svg{
+  width:14px;
+  height:14px;
+  fill:var(--white);
+}
+
+.card{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:420px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  animation: fadeUp .6s ease both;
+}
+
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(18px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.avatar-wrap{
+  width:104px; height:104px;
+  border-radius:50%;
+  border:3px solid var(--white);
+  padding:4px;
+  margin-bottom:18px;
+}
+.avatar{
+  width:100%; height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+}
+
+.name{
+  font-size:1.5rem;
+  font-weight:800;
+  letter-spacing:.5px;
+  margin-bottom:8px;
+}
+
+.bio{
+  font-size:.95rem;
+  color:var(--gray-600);
+  line-height:1.5;
+  max-width:340px;
+  margin-bottom:22px;
+}
+
+.socials{
+  display:flex;
+  gap:14px;
+  margin-bottom:30px;
+}
+.social-btn{
+  width:40px; height:40px;
+  border-radius:50%;
+  border:1.5px solid var(--white);
+  display:flex; align-items:center; justify-content:center;
+  transition: background .18s ease, transform .18s ease, border-color .18s ease;
+}
+.social-btn svg{
+  width:18px; height:18px;
+  fill:var(--white);
+  transition: fill .18s ease;
+}
+.social-btn:hover{
+  background:var(--purple);
+  border-color:var(--purple);
+  transform:translateY(-2px);
+}
+.social-btn:hover svg{
+  fill:var(--white);
+}
+
+.links{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-bottom:34px;
+}
+
+.link-btn{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  padding:16px 20px;
+  background:var(--black);
+  border:2px solid var(--white);
+  border-radius:var(--radius);
+  color:var(--white);
+  font-weight:600;
+  font-size:.95rem;
+  text-decoration:none;
+  box-shadow: var(--shadow);
+  transition: transform .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.link-btn:hover{
+  transform:translate(-2px,-2px);
+  box-shadow: 4px 4px 0 var(--purple);
+  background:var(--purple);
+  border-color:var(--purple);
+  color:var(--white);
+}
+
+.link-btn:active{
+  transform:translate(0,0);
+  box-shadow: 0 0 0 var(--purple);
+}
+
+.link-btn.featured{
+  background:var(--black);
+  color:var(--white);
+}
+.link-btn.featured:hover{
+  background:var(--purple);
+  border-color:var(--purple);
+  color:var(--white);
+}
+
+.footer{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gray-600);
+  font-size:.78rem;
+  letter-spacing:.3px;
+}
+.footer .dot{
+  font-size:.5rem;
+  color:var(--purple);
+}
+
+@media (max-width:420px){
+  .card{max-width:100%;}
+  .name{font-size:1.3rem;}
+}

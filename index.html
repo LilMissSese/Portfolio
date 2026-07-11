@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serenity Belle | Portfolio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="bg-shapes" aria-hidden="true">
+    <span class="shape circle"></span>
+    <span class="shape ring"></span>
+  </div>
+
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <audio id="bg-music" loop preload="auto"></audio>
+  <div class="music-control">
+    <div class="music-row">
+      <div class="music-meta">
+        <img id="music-art" class="music-art" src="" alt="" hidden>
+        <div id="music-art-fallback" class="music-art-fallback">♪</div>
+        <div class="music-text">
+          <span class="music-now-playing">Now Playing</span>
+          <span id="music-title" class="music-title">warmth</span>
+        </div>
+      </div>
+      <button id="music-toggle" class="music-toggle" aria-label="Pause music" aria-pressed="true">
+        <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+    </div>
+    <div class="music-volume-wrap">
+      <input id="music-volume" class="music-volume" type="range" min="0" max="100" value="25" step="1" aria-label="Music volume">
+    </div>
+  </div>
+
+  <main class="card">
+    <div class="avatar-wrap">
+      <img class="avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=Serenity%20Belle&backgroundColor=0a0a0a&textColor=ffffff" alt="Profile photo">
+    </div>
+
+    <h1 class="name">Serenity Belle</h1>
+    <p class="bio">Beginner Photographer &amp; Video editor</p>
+
+    <div class="socials">
+      <a href="https://instagram.com/FrostGreatness" target="_blank" rel="noopener" class="social-btn" aria-label="Instagram">
+        <svg viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+      </a>
+      <a href="https://youtube.com/@LilMissSese" target="_blank" rel="noopener" class="social-btn" aria-label="YouTube">
+        <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.56A3.02 3.02 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.12 2.14C4.5 20.5 12 20.5 12 20.5s7.5 0 9.38-.56a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+      </a>
+      <a href="https://x.com/LilMissSese" target="_blank" rel="noopener" class="social-btn" aria-label="X / Twitter">
+        <svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.5 8.6L23.3 22h-6.9l-5.4-6.7L4.8 22H1.6l8-9.2L.9 2h7l4.9 6.1L18.9 2zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20z"/></svg>
+      </a>
+    </div>
+
+    <div class="links">
+      <a class="link-btn photos" href="https://instagram.com/FrostGreatness" target="_blank" rel="noopener" data-label="Instagram">
+        <span class="link-avatar-wrap">
+          <img class="link-avatar" src="https://unavatar.io/instagram/FrostGreatness" alt=""
+               onerror="this.style.display='none';">
+          <span class="link-avatar link-avatar-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+          </span>
+        </span>
+        <span>My Instagram</span>
+      </a>
+      <a class="link-btn featured" href="https://youtube.com/@LilMissSese" target="_blank" rel="noopener" data-label="Youtube">
+        <span class="link-avatar-wrap">
+          <img class="link-avatar" src="https://unavatar.io/youtube/@LilMissSese" alt=""
+               onerror="this.style.display='none';">
+          <span class="link-avatar link-avatar-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.56A3.02 3.02 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.12 2.14C4.5 20.5 12 20.5 12 20.5s7.5 0 9.38-.56a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+          </span>
+        </span>
+        <span>My Youtube Channel</span>
+      </a>
+      <a class="link-btn" href="https://x.com/LilMissSese" target="_blank" rel="noopener" data-label="X">
+        <span class="link-avatar-wrap">
+          <img class="link-avatar" src="https://unavatar.io/x/LilMissSese" alt=""
+               onerror="this.style.display='none';">
+          <span class="link-avatar link-avatar-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.5 8.6L23.3 22h-6.9l-5.4-6.7L4.8 22H1.6l8-9.2L.9 2h7l4.9 6.1L18.9 2zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20z"/></svg>
+          </span>
+        </span>
+        <span>My X / Twitter</span>
+      </a>
+      <a class="link-btn featured" href="gallery.html" data-label="Gallery">
+        <span>My Photo Gallery</span>
+      </a>
+    </div>
+
+    <footer class="footer">
+      <span>Serenity Belle</span>
+      <span class="dot">●</span>
+      <span>Portfolio</span>
+    </footer>
+  </main>
+
+<script src="starfield.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

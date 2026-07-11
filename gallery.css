@@ -1,0 +1,157 @@
+:root{
+  --black:#0a0a0a;
+  --white:#ffffff;
+  --gray-100:#1a1a1a;
+  --gray-300:#2b2b2b;
+  --gray-600:#b8b8b8;
+  --purple:#aa46ad;
+  --gutter:10px;
+  --side-pad:40px;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+html,body{
+  background:var(--black);
+  color:var(--white);
+  font-family:'Helvetica Neue', Arial, sans-serif;
+}
+
+#starfield{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:var(--black);
+}
+
+.gallery-header{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:22px var(--side-pad) 14px;
+}
+
+.back-link{
+  color:var(--gray-600);
+  text-decoration:none;
+  font-size:.85rem;
+  font-weight:600;
+  transition:color .15s ease;
+  flex-shrink:0;
+}
+.back-link:hover{ color:var(--white); }
+
+.gallery-title{
+  font-size:1.15rem;
+  font-weight:800;
+  letter-spacing:.3px;
+  flex-shrink:0;
+}
+
+.gallery-count{
+  margin-left:auto;
+  font-size:.8rem;
+  color:var(--gray-600);
+  flex-shrink:0;
+}
+
+/* ── Masonry grid: CSS columns pack images with their natural aspect
+   ratio, so there's no leftover blank space within a column — only the
+   deliberate side padding and the fixed gutter between tiles/columns. ── */
+.gallery{
+  position:relative;
+  z-index:1;
+  column-gap:var(--gutter);
+  column-width:260px;
+  padding:0 var(--side-pad) 40px;
+}
+
+.gallery-empty{
+  column-span:all;
+  text-align:center;
+  color:var(--gray-600);
+  font-size:.9rem;
+  padding:80px 20px;
+}
+.gallery-empty code{
+  color:var(--white);
+  background:var(--gray-100);
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:.85em;
+}
+
+.tile{
+  break-inside:avoid;
+  -webkit-column-break-inside:avoid;
+  margin-bottom:var(--gutter);
+  border-radius:10px;
+  overflow:hidden;
+  border:1.5px solid var(--gray-300);
+  background:var(--gray-100);
+}
+
+.tile img{
+  display:block;
+  width:100%;
+  height:auto;
+  cursor:zoom-in;
+  transition:transform .25s ease, filter .25s ease;
+}
+.tile img:hover{
+  transform:scale(1.02);
+  filter:brightness(1.05);
+}
+
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  background:rgba(10,10,10,.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+}
+.lightbox[hidden]{ display:none; }
+
+.lightbox-img{
+  max-width:100%;
+  max-height:100%;
+  border-radius:10px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.lightbox-close{
+  position:absolute;
+  top:18px;
+  right:24px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1.5px solid var(--white);
+  background:var(--black);
+  color:var(--white);
+  font-size:1.4rem;
+  line-height:1;
+  cursor:pointer;
+  transition:background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.lightbox-close:hover{
+  background:var(--purple);
+  border-color:var(--purple);
+  transform:translateY(-2px);
+}
+
+@media (max-width:480px){
+  :root{ --side-pad:18px; --gutter:8px; }
+  .gallery{ column-width:150px; }
+  .gallery-header{ flex-wrap:wrap; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .tile img{ transition:none; }
+}
