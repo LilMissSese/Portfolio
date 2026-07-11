@@ -366,8 +366,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     toggle.addEventListener('click', async () => {
+      const wasSuspended = audioCtx.state === 'suspended';
       resumeAudioContext();
       await trackReady;
+
+      if (wasSuspended) {
+        // This tap's real job was just to unlock audio for iOS. If the
+        // music was already silently autoplaying (gain was 0), let it
+        // keep playing — now audibly — instead of treating this tap as
+        // a request to pause what looked, visually, like it was
+        // already going.
+        if (!playing) {
+          try {
+            await music.play();
+            setPlayingUI(true);
+          } catch (e) { /* ignore */ }
+        }
+        return;
+      }
+
       if (playing) {
         music.pause();
         setPlayingUI(false);
