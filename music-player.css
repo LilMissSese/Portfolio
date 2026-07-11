@@ -1,0 +1,188 @@
+/* ── Shared music widget ──────────────────────────────────────────
+   Used on every page (index, gallery, etc). Pulled out of style.css
+   so it stays identical everywhere instead of drifting per-page.
+
+   Positioning notes (this is the mobile "moves around / blocks stuff"
+   fix): we pin the widget with position:fixed + safe-area insets, and
+   in music-player.js we re-assert that position on scroll/resize/
+   visualViewport changes. Some mobile browsers shift fixed elements
+   around while the address bar shows/hides or the page bounces, so
+   locking it in JS as a backstop is more reliable than CSS alone.
+   Width is capped in real pixels (not vw) so it can't balloon out on
+   narrow phones and cover the avatar/name underneath. ── */
+
+.music-control{
+  position:fixed;
+  top:calc(env(safe-area-inset-top, 0px) + 14px);
+  right:calc(env(safe-area-inset-right, 0px) + 14px);
+  z-index:50;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+  width:max-content;
+  max-width:190px;
+  pointer-events:none; /* only the interactive children opt back in below */
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+}
+
+.music-row,
+.music-meta,
+.music-toggle,
+.music-volume-wrap{
+  pointer-events:auto;
+}
+
+.music-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  max-width:100%;
+}
+
+.music-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  overflow:hidden;
+  min-width:0;
+  background:var(--black);
+  border:1.5px solid var(--white);
+  border-radius:999px;
+  padding:5px 10px 5px 5px;
+}
+
+.music-art{
+  width:26px; height:26px;
+  min-width:26px; min-height:26px;
+  max-width:26px; max-height:26px;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center;
+  overflow:hidden;
+  flex-shrink:0;
+  display:block;
+}
+.music-art[hidden]{ display:none !important; }
+
+.music-art-fallback{
+  width:26px; height:26px;
+  min-width:26px; min-height:26px;
+  max-width:26px; max-height:26px;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--purple);
+  color:var(--white);
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  font-size:12px;
+  line-height:1;
+  flex-shrink:0;
+}
+.music-art-fallback[hidden]{ display:none !important; }
+
+.music-text{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  overflow:hidden;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+.music-now-playing,
+.music-title{
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.music-now-playing{
+  font-size:.56rem;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--gray-600);
+}
+
+.music-title{
+  font-size:.74rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100px;
+}
+
+.music-toggle{
+  width:38px; height:38px;
+  border-radius:50%;
+  border:1.5px solid var(--white);
+  background:var(--black);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition: background .18s ease, transform .18s ease, border-color .18s ease;
+}
+.music-toggle svg{
+  width:16px; height:16px;
+  fill:var(--white);
+}
+.music-toggle .icon-pause{display:none;}
+.music-toggle.is-playing .icon-play{display:none;}
+.music-toggle.is-playing .icon-pause{display:block;}
+.music-toggle:hover{
+  background:var(--purple);
+  border-color:var(--purple);
+  transform:translateY(-2px);
+}
+
+/* Vertical volume slider, done with native vertical orientation
+   instead of a rotated horizontal <input> + CSS transform. The old
+   rotate(-90deg) approach is what made the slider hard/impossible to
+   drag on touchscreens — mobile browsers map touch coordinates to the
+   input's un-rotated box, so your finger and the thumb disagree about
+   where "up" is. -webkit-appearance:slider-vertical (Chrome/Safari)
+   and orient="vertical" (Firefox) give a real vertical track that
+   responds to touch correctly. */
+.music-volume-wrap{
+  background:var(--black);
+  border:1.5px solid var(--white);
+  border-radius:999px;
+  padding:10px 0;
+  width:34px;
+  height:88px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.music-volume{
+  margin:0;
+  cursor:pointer;
+  accent-color: var(--purple);
+  background:transparent;
+  width:20px;
+  height:68px;
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  touch-action: none;
+}
+
+@media (max-width:480px){
+  .music-control{
+    max-width:150px;
+    top:calc(env(safe-area-inset-top, 0px) + 10px);
+    right:calc(env(safe-area-inset-right, 0px) + 10px);
+    gap:8px;
+  }
+  .music-now-playing{ display:none; }
+  .music-title{ max-width:70px; font-size:.7rem; }
+  .music-art, .music-art-fallback{ width:22px; height:22px; min-width:22px; min-height:22px; max-width:22px; max-height:22px; }
+  .music-toggle{ width:34px; height:34px; }
+  .music-volume-wrap{ width:28px; height:70px; padding:8px 0; }
+  .music-volume{ height:52px; }
+}

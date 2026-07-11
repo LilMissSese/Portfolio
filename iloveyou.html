@@ -3,11 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Serenity Belle | Photos</title>
-<link rel="stylesheet" href="gallery.css">
+<title>I love you</title>
+<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="music-player.css">
+<style>
+  /* Small page-specific tweaks — everything else reuses style.css's
+     existing .card/.footer look so this page matches the rest of the site. */
+  .iloveyou-card{ max-width:480px; }
+  .iloveyou-title{
+    font-size:2rem;
+    font-weight:800;
+    margin-bottom:14px;
+  }
+  .iloveyou-body{
+    color:var(--gray-600);
+    line-height:1.6;
+    font-size:1rem;
+  }
+  .back-home{
+    display:inline-block;
+    margin-top:28px;
+    color:var(--gray-600);
+    text-decoration:none;
+    font-size:.85rem;
+    font-weight:600;
+    transition:color .15s ease;
+  }
+  .back-home:hover{ color:var(--white); }
+</style>
 </head>
 <body>
+
+  <div class="bg-shapes" aria-hidden="true">
+    <span class="shape circle"></span>
+    <span class="shape ring"></span>
+  </div>
 
   <canvas id="starfield" aria-hidden="true"></canvas>
 
@@ -32,25 +62,16 @@
     </div>
   </div>
 
-  <header class="gallery-header">
-    <a class="back-link" href="index.html">&larr; Back</a>
-    <h1 class="gallery-title">Photos</h1>
-    <span class="gallery-count" id="gallery-count"></span>
-  </header>
-
-  <main class="gallery" id="gallery" aria-live="polite">
-    <p class="gallery-empty" id="gallery-empty" hidden>
-      No photos yet — drop images into <code>/photos</code> and refresh.
+  <main class="card iloveyou-card">
+    <h1 class="iloveyou-title">I love you</h1>
+    <p class="iloveyou-body">
+      This page is just a placeholder for now — tell me what you'd like it to say
+      and look like, and I'll build it out.
     </p>
+    <a class="back-home" href="index.html">&larr; Back home</a>
   </main>
-
-  <div class="lightbox" id="lightbox" hidden>
-    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
-    <img class="lightbox-img" id="lightbox-img" alt="">
-  </div>
 
 <script src="starfield.js"></script>
 <script src="music-player.js"></script>
-<script src="gallery.js"></script>
 </body>
 </html>
