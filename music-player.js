@@ -206,7 +206,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let userVolume = initialVolumePercent / 100; // 0–1, set by the slider
     let playing = false;
 
-    music.volume = 0;
+    // iOS ignores JS changes to audio.volume entirely — only the
+    // hardware buttons control loudness there. To actually change
+    // volume in code we have to route playback through the Web Audio
+    // API and scale the signal with a GainNode instead. This works the
+    // same way on every browser, so we use it everywhere rather than
+    // branching per-platform. AudioContext also starts suspended until
+    // a user gesture resumes it (another iOS requirement) — handled by
+    // resumeAudioContext() below, called from every gesture handler we
+    // already have (toggle click, first tap/keypress).
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContextClass();
+    const sourceNode = audioCtx.createMediaElementSource(music);
+    const gainNode = audioCtx.createGain();
+    sourceNode.connect(gainNode).connect(audioCtx.destination);
+    gainNode.gain.value = 0;
+
+    function resumeAudioContext() {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch((err) => console.log('Could not resume audio context:', err));
+      }
+    }
 
     function setVolumeUI(percent) {
       const clamped = Math.max(0, Math.min(100, percent));
@@ -221,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyFade() {
       if (!music.duration || isNaN(music.duration)) {
-        music.volume = 0;
+        gainNode.gain.value = 0;
         return;
       }
       const t = music.currentTime;
@@ -234,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fadeMultiplier = remaining / FADE_SECONDS;
       }
 
-      music.volume = Math.max(0, Math.min(1, userVolume * fadeMultiplier));
+      gainNode.gain.value = Math.max(0, Math.min(1, userVolume * fadeMultiplier));
     }
 
     music.addEventListener('timeupdate', applyFade);
@@ -265,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // never re-read the rect after the drag begins.
     volumeEl.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      resumeAudioContext();
       volumeEl.setPointerCapture(e.pointerId);
 
       const rect = volumeEl.getBoundingClientRect();
@@ -314,55 +335,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function attemptAutoplay() {
-      // First, try to autoplay with sound on directly — some browsers
-      // (and PWAs / installed sites, or pages you just navigated to
-      // via a click, which counts as recent user activation) allow this.
+      // Playback itself can always start "silently" here because gain
+      // is 0 until applyFade raises it, and the AudioContext starts
+      // suspended (no audible output at all) until a user gesture
+      // resumes it — so we don't need the old muted-attribute trick.
       try {
         await music.play();
         setPlayingUI(true);
-        return;
-      } catch (err) {
-        // Blocked. Fall back to the muted-autoplay trick, which almost
-        // every browser allows, then unmute on the first interaction.
-      }
-
-      music.muted = true;
-      try {
-        await music.play();
-        setPlayingUI(true);
-        const unmute = () => {
-          music.muted = false;
-          window.removeEventListener('pointerdown', unmute);
-          window.removeEventListener('keydown', unmute);
-          window.removeEventListener('touchstart', unmute);
-        };
-        window.addEventListener('pointerdown', unmute, { once: true });
-        window.addEventListener('keydown', unmute, { once: true });
-        window.addEventListener('touchstart', unmute, { once: true });
       } catch (err) {
         console.log('Autoplay blocked entirely; waiting for a click to start playback.', err);
         setPlayingUI(false);
-        const startOnInteraction = async () => {
-          music.muted = false;
+      }
+
+      const startOnInteraction = async () => {
+        resumeAudioContext();
+        if (!playing) {
           try {
             await music.play();
             setPlayingUI(true);
           } catch (e) { /* ignore */ }
-          window.removeEventListener('pointerdown', startOnInteraction);
-          window.removeEventListener('keydown', startOnInteraction);
-        };
-        window.addEventListener('pointerdown', startOnInteraction, { once: true });
-        window.addEventListener('keydown', startOnInteraction, { once: true });
-      }
+        }
+        window.removeEventListener('pointerdown', startOnInteraction);
+        window.removeEventListener('keydown', startOnInteraction);
+        window.removeEventListener('touchstart', startOnInteraction);
+      };
+      window.addEventListener('pointerdown', startOnInteraction, { once: true });
+      window.addEventListener('keydown', startOnInteraction, { once: true });
+      window.addEventListener('touchstart', startOnInteraction, { once: true });
     }
 
     toggle.addEventListener('click', async () => {
       await trackReady;
+      resumeAudioContext();
       if (playing) {
         music.pause();
         setPlayingUI(false);
       } else {
-        music.muted = false;
         try {
           await music.play();
           setPlayingUI(true);
