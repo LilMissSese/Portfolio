@@ -254,7 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fadeMultiplier = remaining / FADE_SECONDS;
       }
 
-      gainNode.gain.value = Math.max(0, Math.min(1, userVolume * fadeMultiplier));
+      const target = Math.max(0, Math.min(1, userVolume * fadeMultiplier));
+      gainNode.gain.setTargetAtTime(target, audioCtx.currentTime, 0.05);
     }
 
     music.addEventListener('timeupdate', applyFade);
@@ -365,8 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     toggle.addEventListener('click', async () => {
-      await trackReady;
       resumeAudioContext();
+      await trackReady;
       if (playing) {
         music.pause();
         setPlayingUI(false);

@@ -37,12 +37,17 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:32px;
+    padding:72px 24px;
     text-align:center;
   }
 
   .iloveyou-content{
-    max-width:640px;
+    width:100%;
+    height:100%;
+    max-width:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
 
   .iloveyou-quote{
@@ -71,8 +76,10 @@
      copy has fully scrolled past, so the loop never visibly jumps or
      shows a blank gap. */
   .iloveyou-scroll-viewport{
-    max-width:560px;
-    max-height:38vh;
+    width:100%;
+    max-width:720px;
+    height:100%;
+    max-height:none;
     overflow:hidden;
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 12%, black 88%, transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0, black 12%, black 88%, transparent 100%);
@@ -82,7 +89,7 @@
   }
   .iloveyou-scroll-copy{
     font-family:'Minecraft Seven', 'Helvetica Neue', Arial, sans-serif;
-    font-size:1.05rem;
+    font-size:1.2rem;
     line-height:1.9;
     white-space:pre-wrap;
     text-shadow:0 2px 0 rgba(0,0,0,.6), 0 0 14px rgba(0,0,0,.4);
@@ -91,8 +98,7 @@
   }
 
   @media (max-width:480px){
-    .iloveyou-scroll-viewport{ max-height:32vh; }
-    .iloveyou-scroll-copy{ font-size:.92rem; }
+    .iloveyou-scroll-copy{ font-size:1rem; }
   }
   .back-home{
     position:fixed;
@@ -168,7 +174,7 @@
     const copyB = document.getElementById('iloveyou-scroll-copy-b');
     if (!viewport || !track || !copyA || !copyB) return;
 
-    const SPEED_PX_PER_SEC = 6; // slow, readable scroll
+    const SPEED_PX_PER_SEC = 8; // slow, readable scroll
     const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     fetch('fonts/blank.txt', { cache: 'no-store' })
