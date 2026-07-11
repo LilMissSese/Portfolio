@@ -20,11 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const music = document.getElementById('bg-music');
   const toggle = document.getElementById('music-toggle');
-  const volumeSlider = document.getElementById('music-volume');
+  const volumeEl = document.getElementById('music-volume');
+  const volumeFill = document.getElementById('music-volume-fill');
+  const volumeThumb = document.getElementById('music-volume-thumb');
   const titleEl = document.getElementById('music-title');
   const artEl = document.getElementById('music-art');
   const artFallbackEl = document.getElementById('music-art-fallback');
-  const musicControl = document.querySelector('.music-control');
 
   if (!music) return;
 
@@ -48,26 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const savedState = readSavedState();
 
-  // ── Keep the widget pinned on mobile, regardless of what the ──────
-  // browser's address bar / virtual keyboard / viewport is doing.
-  // position:fixed *should* be enough, but several mobile browsers
-  // shift fixed elements while the URL bar hides on scroll or the
-  // page rubber-bands, which is what made this look like it was
-  // "moving around and blocking things." Re-asserting the offset from
-  // visualViewport on every change is a reliable backstop on top of
-  // the CSS.
-  if (musicControl && window.visualViewport) {
-    const vv = window.visualViewport;
-    const lockPosition = () => {
-      const offsetX = window.innerWidth - vv.width - vv.offsetLeft;
-      musicControl.style.transform = `translate(${-offsetX}px, ${-vv.offsetTop}px)`;
-    };
-    vv.addEventListener('resize', lockPosition);
-    vv.addEventListener('scroll', lockPosition);
-    lockPosition();
-  }
-
-  // Any .mp3/.m4a/.ogg/.wav/.flac/.aac dropped into /music is picked up
+  // ── Pick / load the track ──────────────────────────────────────
   // automatically: serve.py scans the folder and writes music/manifest.json,
   // and here we just read that list and choose a track from it. Falls back
   // to a single known file if the manifest is missing (e.g. opened without
@@ -216,16 +198,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
   }));
 
-  if (toggle && volumeSlider) {
+  if (toggle && volumeEl && volumeFill && volumeThumb) {
     const FADE_SECONDS = 1.8; // length of the in/out fade, in seconds of audio time
     const initialVolumePercent = savedState && typeof savedState.volume === 'number'
       ? Math.round(savedState.volume * 100)
-      : (parseInt(volumeSlider.value, 10) || 25);
-    volumeSlider.value = String(initialVolumePercent);
+      : 25;
     let userVolume = initialVolumePercent / 100; // 0–1, set by the slider
     let playing = false;
 
     music.volume = 0;
+
+    function setVolumeUI(percent) {
+      const clamped = Math.max(0, Math.min(100, percent));
+      volumeFill.style.height = clamped + '%';
+      volumeThumb.style.bottom = clamped + '%';
+      volumeEl.setAttribute('aria-valuenow', String(Math.round(clamped)));
+      return clamped;
+    }
+    setVolumeUI(initialVolumePercent);
+    volumeEl.setAttribute('aria-valuemin', '0');
+    volumeEl.setAttribute('aria-valuemax', '100');
 
     function applyFade() {
       if (!music.duration || isNaN(music.duration)) {
@@ -247,10 +239,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     music.addEventListener('timeupdate', applyFade);
 
-    volumeSlider.addEventListener('input', () => {
-      userVolume = (parseInt(volumeSlider.value, 10) || 0) / 100;
+    // Custom vertical slider: percent is measured from the bottom of
+    // the track (0%) to the top (100%), driven entirely by pointer
+    // events so it works the same on mouse, touch, and pen regardless
+    // of any given browser's native <input type=range> quirks.
+    function percentFromPointer(clientY) {
+      const rect = volumeEl.getBoundingClientRect();
+      if (!rect.height) return userVolume * 100;
+      return ((rect.bottom - clientY) / rect.height) * 100;
+    }
+
+    function setVolume(percent) {
+      const clamped = setVolumeUI(percent);
+      userVolume = clamped / 100;
       applyFade();
       writeSavedState({ volume: userVolume });
+    }
+
+    volumeEl.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      volumeEl.setPointerCapture(e.pointerId);
+      setVolume(percentFromPointer(e.clientY));
+
+      const onMove = (ev) => setVolume(percentFromPointer(ev.clientY));
+      const onUp = (ev) => {
+        volumeEl.releasePointerCapture(ev.pointerId);
+        volumeEl.removeEventListener('pointermove', onMove);
+        volumeEl.removeEventListener('pointerup', onUp);
+        volumeEl.removeEventListener('pointercancel', onUp);
+      };
+      volumeEl.addEventListener('pointermove', onMove);
+      volumeEl.addEventListener('pointerup', onUp);
+      volumeEl.addEventListener('pointercancel', onUp);
+    });
+
+    volumeEl.addEventListener('keydown', (e) => {
+      const current = parseFloat(volumeEl.getAttribute('aria-valuenow')) || 0;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+        setVolume(current + 5);
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+        setVolume(current - 5);
+        e.preventDefault();
+      }
     });
 
     function setPlayingUI(isPlaying) {

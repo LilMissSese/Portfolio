@@ -33,7 +33,12 @@
       </button>
     </div>
     <div class="music-volume-wrap">
-      <input id="music-volume" class="music-volume" type="range" min="0" max="100" value="25" step="1" orient="vertical" aria-label="Music volume" aria-orientation="vertical">
+      <div id="music-volume" class="music-volume" role="slider" tabindex="0"
+           aria-label="Music volume" aria-orientation="vertical" aria-valuenow="25">
+        <div class="music-volume-track"></div>
+        <div id="music-volume-fill" class="music-volume-fill"></div>
+        <div id="music-volume-thumb" class="music-volume-thumb"></div>
+      </div>
     </div>
   </div>
 
@@ -90,6 +95,9 @@
       </a>
       <a class="link-btn featured" href="gallery.html" data-label="Gallery">
         <span>My Photo Gallery</span>
+      </a>
+      <a class="link-btn" href="iloveyou.html" data-label="I love you">
+        <span>I Love You</span>
       </a>
     </div>
 
